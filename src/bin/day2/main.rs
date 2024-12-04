@@ -25,5 +25,20 @@ fn main() {
             .filter(|&report| (all_increasing(report) || all_decreasing(report)) && gradual(report))
             .count();
         dbg!(&ret);
+
+        let ret = reports
+            .iter()
+            .filter(|&report| {
+                let mut tmp = vec![0; report.len() - 1];
+                (0..report.len()).any(|idx| {
+                    (0usize..report.len())
+                        .filter(|i| *i != idx)
+                        .enumerate()
+                        .for_each(|(i, j)| tmp[i] = report[j]);
+                    (all_increasing(&tmp) || all_decreasing(&tmp)) && gradual(&tmp)
+                })
+            })
+            .count();
+        dbg!(&ret);
     }
 }
