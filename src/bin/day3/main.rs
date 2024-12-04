@@ -5,7 +5,6 @@ use regex::Regex;
 fn main() {
     let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     if let Ok(lines) = read_lines("./inputs/day3/input.txt") {
-        // Consumes the iterator, returns an (Optional) String
         let input = lines.flatten().join("");
 
         let res = re

@@ -21,6 +21,7 @@ impl WordSearch {
         self.data[idx] = value;
     }
 
+    #[allow(dead_code)]
     pub fn get(&mut self, row: usize, col: usize) -> u8 {
         self.data[self.idx(row, col)]
     }
@@ -135,7 +136,6 @@ impl WordSearch {
 fn main() {
     let mut ws = WordSearch::zeros(140, 140);
     if let Ok(lines) = read_lines("./inputs/day4/input.txt") {
-        // Consumes the iterator, returns an (Optional) String
         lines.flatten().enumerate().for_each(|(row, line)| {
             assert!(line.is_ascii());
             assert!(line.bytes().count() == 140);

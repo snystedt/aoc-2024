@@ -10,7 +10,6 @@ fn main() {
     };
 
     if let Ok(lines) = read_lines("./inputs/day2/input.txt") {
-        // Consumes the iterator, returns an (Optional) String
         let reports: Vec<Vec<u32>> = lines
             .flatten()
             .map(|line| {

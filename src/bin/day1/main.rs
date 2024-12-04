@@ -3,9 +3,7 @@ use std::collections::BTreeMap;
 use aoc_2024::input::read_lines;
 
 fn main() {
-    // File hosts.txt must exist in the current path
     if let Ok(lines) = read_lines("./inputs/day1/input.txt") {
-        // Consumes the iterator, returns an (Optional) String
         let (mut left, mut right): (Vec<u32>, Vec<u32>) = lines
             .flatten()
             .map(|line| {
