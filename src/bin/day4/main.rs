@@ -105,6 +105,31 @@ impl WordSearch {
 
         h_cnt + v_cnt + dr_cnt + dl_cnt
     }
+
+    pub fn find_all_sams(&self) -> usize {
+        let needle = "MAS";
+
+        let cmp_needle = |word: &[u8; 3]| {
+            word.iter()
+                .zip(needle.as_bytes().iter())
+                .all(|(w, n)| w == n)
+                || word
+                    .iter()
+                    .rev()
+                    .zip(needle.as_bytes().iter())
+                    .all(|(w, n)| w == n)
+        };
+
+        let dr_cnt = (0..self.rows - 2)
+            .cartesian_product(0..self.cols - 2)
+            .filter(|&(row, col)| {
+                cmp_needle(&self.diagonal_right::<3>(row, col))
+                    && cmp_needle(&self.diagonal_left::<3>(row, col + 2))
+            })
+            .count();
+
+        dr_cnt
+    }
 }
 
 fn main() {
@@ -120,5 +145,6 @@ fn main() {
         });
 
         dbg!(ws.find_all_needles::<4>("XMAS"));
+        dbg!(ws.find_all_sams());
     }
 }
