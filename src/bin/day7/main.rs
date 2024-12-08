@@ -31,7 +31,7 @@ fn find_operators_with_op_sequences(result: i64, terms: &[i64]) -> Vec<Vec<Opera
                     sequences.push(ops);
                 }
             } else {
-                options.push_back((res * next_term, ops));
+                options.push_front((res * next_term, ops));
             }
         }
 
@@ -56,7 +56,7 @@ fn find_operators_with_op_sequences(result: i64, terms: &[i64]) -> Vec<Vec<Opera
                         sequences.push(ops);
                     }
                 } else {
-                    options.push_back((cat, ops));
+                    options.push_front((cat, ops));
                 }
             }
         }
