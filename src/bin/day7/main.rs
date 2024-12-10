@@ -3,6 +3,7 @@ use std::collections::VecDeque;
 use aoc_2024::input::read_lines;
 use itertools::Itertools;
 
+#[allow(dead_code)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Operator {
     Add,
@@ -10,10 +11,39 @@ enum Operator {
     Concat,
 }
 
+static I64_LOG_10_TABLE: [i64; 17] = [
+    9,
+    99,
+    999,
+    9999,
+    99999,
+    999999,
+    9999999,
+    99999999,
+    999999999,
+    9999999999,
+    99999999999,
+    999999999999,
+    9999999999999,
+    99999999999999,
+    999999999999999,
+    9999999999999999,
+    99999999999999999,
+];
+
+#[inline]
 fn concat_i64(left: i64, right: i64) -> i64 {
-    left * 10i64.pow(right.ilog10() + 1) + right
+    //left * 10i64.pow(right.ilog10() + 1) + right
+    for i in 0..17 {
+        if right <= I64_LOG_10_TABLE[i] {
+            return left * (I64_LOG_10_TABLE[i] + 1) + right;
+        }
+    }
+
+    unreachable!()
 }
 
+#[allow(dead_code)]
 fn find_operators_with_op_sequences(result: i64, terms: &[i64]) -> Vec<Vec<Operator>> {
     let mut sequences: Vec<Vec<Operator>> = vec![];
     let num_terms = terms.len();
@@ -68,9 +98,10 @@ fn find_operators_with_op_sequences(result: i64, terms: &[i64]) -> Vec<Vec<Opera
 fn find_operators(result: i64, terms: &[i64]) -> bool {
     let num_terms = terms.len();
 
-    let mut options: VecDeque<(i64, usize)> = VecDeque::new();
-    options.push_back((terms[0], 0));
-    while let Some((res, num_ops)) = options.pop_front() {
+    let mut options = VecDeque::<(i64, usize)>::with_capacity(128);
+
+    options.push_front((terms[0], 0));
+    while let Some((res, num_ops)) = options.pop_back() {
         let next_term = terms[num_ops + 1];
 
         if res * next_term <= result {
@@ -79,7 +110,20 @@ fn find_operators(result: i64, terms: &[i64]) -> bool {
                     return true;
                 }
             } else {
-                options.push_front((res * next_term, num_ops + 1));
+                options.push_back((res * next_term, num_ops + 1));
+            }
+
+            {
+                let cat = concat_i64(res, next_term);
+                if cat <= result {
+                    if num_ops + 1 == num_terms - 1 {
+                        if cat == result {
+                            return true;
+                        }
+                    } else {
+                        options.push_front((cat, num_ops + 1));
+                    }
+                }
             }
         }
 
@@ -90,19 +134,6 @@ fn find_operators(result: i64, terms: &[i64]) -> bool {
                 }
             } else {
                 options.push_back((res + next_term, num_ops + 1));
-            }
-        }
-
-        {
-            let cat = concat_i64(res, next_term);
-            if cat <= result {
-                if num_ops + 1 == num_terms - 1 {
-                    if cat == result {
-                        return true;
-                    }
-                } else {
-                    options.push_front((cat, num_ops + 1));
-                }
             }
         }
     }
@@ -121,12 +152,13 @@ fn main() {
                     .expect("malformed input")
                     .parse::<i64>()
                     .expect("failed to parse result to i64");
+
                 let terms = split
                     .next()
                     .expect("malformed input")
                     .split(" ")
                     .map(|s| s.parse::<i64>().expect("failed to parse term to i64"))
-                    .collect_vec();
+                    .collect::<Vec<_>>();
                 (result, terms)
             })
             .collect_vec();
